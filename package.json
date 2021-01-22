@@ -1,8 +1,9 @@
 {
   "name": "file-content-reader",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "file content reader",
   "main": "index.js",
+  "repository": "https://github.com/mstrluke/file-content-reader.git",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
