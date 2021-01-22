@@ -1,6 +1,6 @@
 {
   "name": "file-content-reader",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "file content reader",
   "main": "index.js",
   "repository": "https://github.com/mstrluke/file-content-reader.git",
@@ -11,5 +11,16 @@
   "license": "MIT",
   "dependencies": {
     "lru-cache": "^6.0.0"
-  }
+  },
+  "files": [
+    "index.js"
+  ],
+  "engines": {
+    "node": ">=12"
+  },
+  "keywords": [
+    "file reader",
+    "lru",
+    "cache"
+  ]
 }

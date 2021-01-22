@@ -6,24 +6,33 @@ Additional feature is insert critical css to the html in SSR react, [here](https
 Example:
 
 ```js
-  [
-    { "./src/styles.css": "body {\n  margin: 0;\n  padding: 28px 16px;\n}" }
-    { "./src/index.js": "
-      import React from 'react';\n" +
-      "import './component.css';\n" +
-      '\n' +
-      'export default () => (\n' +
-      '  <div>\n' +
-      '   Hello world !!!\n' +
-      '  </div>\n' +
-      ');\n'
-    },
-    { './README.md': 
-      '## File content reader\n' +
-      '\n' +
-      'This package can read any type of files and make object of KV\n' +
-      '```\n'
-    }
+  const fileReader = require('file-content-reader');
+  const filesContent = fileReader(path.resolve(process.cwd() + '/src'), ['.css', '.js', '.md']);
+  // Output
+  {
+    css: [
+      { "./src/styles.css": "body {\n  margin: 0;\n  padding: 28px 16px;\n}" }
+    ],
+    js: [
+      { "./src/index.js": "
+        import React from 'react';\n" +
+        "import './component.css';\n" +
+        '\n' +
+        'export default () => (\n' +
+        '  <div>\n' +
+        '   Hello world !!!\n' +
+        '  </div>\n' +
+        ');\n'
+      },
+    ],
+    md: [
+      { './README.md': 
+        '## File content reader\n' +
+        '\n' +
+        'This package can read any type of files and make object of KV\n' +
+        '```\n'
+      }
+    ]
   ]
 ```
 

@@ -26,26 +26,32 @@ function dirWalker(dir) {
 }
 
 
-function getFilesContent(dir, ext) {
+function getFilesContent(dir, exts) {
+  if (!Array.isArray(exts)) {
+    throw new Error(`Available type of 2 argument is Array, not a ${typeof exts}`)
+  }
+
   const chacheResult = cache.get('file-content');
 
   if (chacheResult) return chacheResult;
 
   const filePaths = dirWalker(dir);
+  const result = {}
 
-  const result = filePaths
-    .map(function (uri, i) {
-      if (path.extname(uri) === ext) {
-        return {
-          [uri.replace(dir, '')]: fs.readFileSync(uri, { encoding: 'utf8' })
-        }
+  exts.forEach(function (ext) {
+    result[ext.slice(1)] = []
+  })
+
+  filePaths.forEach(function (uri) {
+    if (exts.includes(path.extname(uri))) {
+      const content = fs.readFileSync(uri, { encoding: 'utf8' });
+      if (content) {
+        result[path.extname(uri).slice(1)].push({
+          [uri.replace(dir, '')]: content
+        })
       }
-    })
-    .filter(Boolean)
-    .filter(function (item) {
-      return Object.values(item)[0]
-    });
-    
+    }
+  })
 
   cache.set('file-content', result);
   return result;
