@@ -1,0 +1,14 @@
+{
+  "name": "file-content-reader",
+  "version": "1.0.0",
+  "description": "file content reader",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Ulukbek Dzhunusov <dzhunusov.ulukbek@gmail.com> (https://github.com/mstrluke)",
+  "license": "MIT",
+  "dependencies": {
+    "lru-cache": "^6.0.0"
+  }
+}
