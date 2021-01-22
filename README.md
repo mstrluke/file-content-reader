@@ -2,6 +2,7 @@
 
 This package can read any type of files and make object of KV, where Key is equal path and Value is file content.
 Additional feature is insert critical css to the html in SSR react, [here](https://github.com/mstrluke/simple-ssr.git) is example repository.
+
 Example:
 
 ```js
