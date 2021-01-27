@@ -6,8 +6,8 @@ Additional feature is insert critical css to the html in SSR react, [here](https
 Example:
 
 ```js
-  const fileReader = require('file-content-reader');
-  const filesContent = fileReader(path.resolve(process.cwd() + '/src'), ['.css', '.js', '.md'], 'utf8');
+  const { collectFileContent } = require('file-content-reader');
+  const filesContent = collectFileContent(path.resolve(process.cwd() + '/src'), ['.css', '.js', '.md'], 'utf8');
   // Output
   {
     css: [
