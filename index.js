@@ -1,60 +1,109 @@
-var fs = require('fs');
-var path = require('path');
-var LRU = require('lru-cache')
+const fs = require('fs');
+const path = require('path');
+const LRU = require('lru-cache');
 
-var cache = new LRU({
+const cache = new LRU({
   max: 500,
   length: function (n, key) { return n * 2 + key.length },
-  dispose: function (key, n) { n.close() },
   maxAge: 24 * 60 * 60,
 });
 
-function dirWalker(dir) {
-  var result = []
+const isDir = dir => fs.lstatSync(dir).isDirectory();
 
-  fs.readdirSync(dir).forEach(function (file) {
-    var fileDir = path.resolve(dir, file);
+const collectPaths = dir => (
+  fs.readdirSync(dir).reduce((arr, name) => {
+    const fileDir = path.resolve(dir, name);
+    isDir(fileDir) ? arr.concat(collectPaths(fileDir)) : arr.push(fileDir);
+    return arr;
+  }, [])
+);
 
-    if (fs.lstatSync(fileDir).isDirectory()) {
-      result = result.concat(dirWalker(fileDir))
-    } else {
-      result.push(fileDir);
-    }
-  })
+const collectPathsAsync = dir => {
+  return fs.promises.readdir(dir).then((res) => {
+    return res.reduce((arr, name) => {
+      const fileDir = path.resolve(dir, name);
+      isDir(fileDir) ? arr.concat(collectPaths(fileDir)) : arr.push(fileDir);
+      return arr;
+    }, []);
+  });
+};
 
-  return result
-}
-
-
-function getFilesContent(dir, exts) {
+const collectFileContent = (rootDir, exts, encoding = 'utf8') => {
   if (!Array.isArray(exts)) {
-    throw new Error(`Available type of 2 argument is Array, not a ${typeof exts}`)
+    throw new Error(`Arguments types: collectFileContent(String, Array)`);
   }
 
   const chacheResult = cache.get('file-content');
 
   if (chacheResult) return chacheResult;
 
-  const filePaths = dirWalker(dir);
-  const result = {}
+  const filePaths = collectPaths(rootDir);
+  const result = filePaths.reduce((obj, file) => {
 
-  exts.forEach(function (ext) {
-    result[ext.slice(1)] = []
-  })
+    if (exts.includes(path.extname(file))) {
+      const content = fs.readFileSync(file, { encoding });
+      const ext = path.extname(file).slice(1);
 
-  filePaths.forEach(function (uri) {
-    if (exts.includes(path.extname(uri))) {
-      const content = fs.readFileSync(uri, { encoding: 'utf8' });
-      if (content) {
-        result[path.extname(uri).slice(1)].push({
-          [uri.replace(dir, '')]: content
-        })
-      }
+      if (!obj[ext]) obj[ext] = [];
+
+      obj[ext].push({
+        name: file.replace(rootDir, ''),
+        fullName: file,
+        content,
+      });
     }
-  })
+
+    return obj;
+  }, {});
 
   cache.set('file-content', result);
   return result;
 }
 
-module.exports = getFilesContent;
+const collectFileContentAsync = (rootDir, exts, encoding = 'utf8') => (
+  new Promise((resolve, reject) => {
+    if (!Array.isArray(exts)) {
+      reject(new Error(`Arguments types: collectFileContent(String, Array)`));
+    }
+
+    const chacheResult = cache.get('file-content');
+
+    if (chacheResult) resolve(chacheResult);
+
+    collectPathsAsync(rootDir).then((res) => ({
+      promises: Promise.all(res.map((file) => fs.promises.readFile(file, { encoding }))),
+      res
+    })).then(({ promises, res }) => {
+
+      resolve(promises.then((contents) => (
+        res.reduce((obj, file, i) => {
+          if (exts.includes(path.extname(file))) {
+            const ext = path.extname(file).slice(1);
+      
+            if (!obj[ext]) obj[ext] = [];
+      
+            obj[ext].push({
+              name: file.replace(rootDir, ''),
+              fullName: file,
+              content: contents[i],
+            });
+          }
+      
+          return obj;
+        }, {})
+      )))
+    });
+  })
+);
+
+module.exports = {
+  collectFileContent: collectFileContent,
+  collectFilePaths: collectPaths,
+};
+
+module.exports.async = {
+  collectFileContent: collectFileContentAsync,
+  collectFilePaths: collectPathsAsync,
+};
+
+module.exports.isDirectory = isDir;

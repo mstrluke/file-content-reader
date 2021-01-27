@@ -7,30 +7,40 @@ Example:
 
 ```js
   const fileReader = require('file-content-reader');
-  const filesContent = fileReader(path.resolve(process.cwd() + '/src'), ['.css', '.js', '.md']);
+  const filesContent = fileReader(path.resolve(process.cwd() + '/src'), ['.css', '.js', '.md'], 'utf8');
   // Output
   {
     css: [
-      { "./src/styles.css": "body {\n  margin: 0;\n  padding: 28px 16px;\n}" }
+      { 
+        name: "/app.css",
+        fullName: "/Users/user/projects/simple-ssr/src/app.css",
+        content:  "./src/styles.css": "body {\n  margin: 0;\n  padding: 28px 16px;\n}"
+      }
     ],
     js: [
-      { "./src/index.js": "
-        import React from 'react';\n" +
-        "import './component.css';\n" +
-        '\n' +
-        'export default () => (\n' +
-        '  <div>\n' +
-        '   Hello world !!!\n' +
-        '  </div>\n' +
-        ');\n'
-      },
+      { 
+        name: "./src/index.js",
+        fullName: "/Users/user/projects/simple-ssr/src/index.js",
+        content: "
+          import React from 'react';\n" +
+          "import './component.css';\n" +
+          '\n' +
+          'export default () => (\n' +
+          '  <div>\n' +
+          '   Hello world !!!\n' +
+          '  </div>\n' +
+          ');\n"
+      }
     ],
     md: [
-      { './README.md': 
-        '## File content reader\n' +
-        '\n' +
-        'This package can read any type of files and make object of KV\n' +
-        '```\n'
+      { 
+        name: "/README.md",
+        fullName: "/Users/user/projects/simple-ssr/src/README.md",
+        content: "
+          '## File content reader\n' +
+          '\n' +
+          'This package can read any type of files and make object of KV\n' +
+          '```\n"
       }
     ]
   ]
