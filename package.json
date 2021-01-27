@@ -1,6 +1,6 @@
 {
   "name": "file-content-reader",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "file content reader",
   "main": "index.js",
   "repository": "https://github.com/mstrluke/file-content-reader.git",
