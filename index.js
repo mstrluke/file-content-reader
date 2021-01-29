@@ -13,7 +13,7 @@ const isDir = dir => fs.lstatSync(dir).isDirectory();
 const collectPaths = dir => (
   fs.readdirSync(dir).reduce((arr, name) => {
     const fileDir = path.resolve(dir, name);
-    isDir(fileDir) ? arr.concat(collectPaths(fileDir)) : arr.push(fileDir);
+    isDir(fileDir) ? arr = arr.concat(collectPaths(fileDir)) : arr.push(fileDir);
     return arr;
   }, [])
 );
@@ -22,7 +22,7 @@ const collectPathsAsync = dir => {
   return fs.promises.readdir(dir).then((res) => {
     return res.reduce((arr, name) => {
       const fileDir = path.resolve(dir, name);
-      isDir(fileDir) ? arr.concat(collectPaths(fileDir)) : arr.push(fileDir);
+      isDir(fileDir) ? arr = arr.concat(collectPaths(fileDir)) : arr.push(fileDir);
       return arr;
     }, []);
   });
